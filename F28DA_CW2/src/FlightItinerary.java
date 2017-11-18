@@ -8,6 +8,7 @@ import java.util.List;
 
 public class FlightItinerary implements IFlightItinerary, IItinerary
 {
+    SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> g = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 
     /** Implementation of interfaces **/
     @Override
@@ -47,15 +48,16 @@ public class FlightItinerary implements IFlightItinerary, IItinerary
 
     @Override
     public boolean populate(HashSet<String[]> airlines, HashSet<String[]> airports, HashSet<String[]> routes) {
-        SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> g = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
         DefaultWeightedEdge e;
+        double w = 0;
         for (String[] set : airports) {
             g.addVertex(set[0]);
         }
         for (String[] set : routes)
         {
+            w = Double.parseDouble(set[5]);
             e = g.addEdge(set[1], set[3]);
-            g.setEdgeWeight(e, Double.parseDouble(set[5]));
+            g.getEdgeWeight(e);
         }
         System.out.print(g);
         return true;
