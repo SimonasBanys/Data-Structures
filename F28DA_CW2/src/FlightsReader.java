@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 public class FlightsReader {
 
-	public static String[] AIRLINECODES = { "BA", "EK" };
+	public static String[] AIRLINECODS = { "BA", "EK" };
 	public static String[] MOREAIRLINECODES = { "AF", "BA", "CX", "CZ", "DL", "EK", "JJ", "KL", "LH", "NH", "QF", "QR",
 			"TK", "UA" };
 

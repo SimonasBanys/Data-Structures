@@ -1,27 +1,19 @@
-<<<<<<< HEAD
-=======
+import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
->>>>>>> Initial
 import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 
 import java.io.FileNotFoundException;
 import java.util.HashSet;
 import java.util.List;
-<<<<<<< HEAD
-=======
 import java.util.Scanner;
->>>>>>> Initial
 
 
 public class FlightItinerary implements IFlightItinerary, IItinerary
 {
     private SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> g = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
-<<<<<<< HEAD
-=======
-    private Scanner scan = new Scanner(System.in);
+    private static Scanner scan = new Scanner(System.in);
 
->>>>>>> Initial
 
     /** Implementation of interfaces **/
     @Override
@@ -72,23 +64,16 @@ public class FlightItinerary implements IFlightItinerary, IItinerary
             if (e != null)
                 g.setEdgeWeight(e, Double.parseDouble(set[5]));
         }
-<<<<<<< HEAD
-
-        System.out.print(g);
-=======
->>>>>>> Initial
         return true;
     }
 
     @Override
     public IItinerary leastCost(String to, String from) throws FlightItineraryException {
-<<<<<<< HEAD
-=======
-        DijkstraShortestPath path = new DijkstraShortestPath(g);
+        DijkstraShortestPath d = new DijkstraShortestPath(g);
+        GraphPath path = d.getPath(from, to);
         System.out.println("Shortest (i.e. cheapest) path:");
-        System.out.println(path.getPath(from, to));
-        System.out.println("Cost of the shortest (i.e. cheapest) path = " + path.getPathWeight(from, to));
->>>>>>> Initial
+        System.out.println(path);
+        System.out.println("Cost of the shortest (i.e. cheapest) path = " + path.getWeight());
         return null;
     }
 
@@ -122,18 +107,13 @@ public class FlightItinerary implements IFlightItinerary, IItinerary
         return null;
     }
 
-
-<<<<<<< HEAD
-    /** Part A **/
-    private void partA() throws FileNotFoundException, FlightItineraryException
+    public String toString(IItinerary i)
     {
-        FlightsReader reader = new FlightsReader(FlightsReader.AIRLINECODES);
-        this.populate(reader.getAirlines(), reader.getAirports(), reader.getRoutes());
-        //System.out.print(leastCost("EDI", "KUL"));
+        String result = "";
+
+        return result;
     }
 
-
-=======
 
     /** Part A **/
     private void partA() throws FileNotFoundException, FlightItineraryException
@@ -169,14 +149,14 @@ public class FlightItinerary implements IFlightItinerary, IItinerary
         end = scan.nextLine();
         DijkstraShortestPath path = new DijkstraShortestPath(graphA);
         System.out.println("Shortest (i.e. cheapest) path:");
-        System.out.println(path.getPath(start, end).toString());
+        System.out.println(path.getPath(start, end));
         System.out.println("Cost of the shortest (i.e. cheapest) path = " + path.getPathWeight(start, end));
     }
 
 
     private void partB() throws FileNotFoundException, FlightItineraryException
     {
-        FlightsReader reader = new FlightsReader(FlightsReader.AIRLINECODES);
+        FlightsReader reader = new FlightsReader(FlightsReader.AIRLINECODS);
         this.populate(reader.getAirlines(), reader.getAirports(), reader.getRoutes());
         String start, end;
         System.out.println("Please enter the start airport:");
@@ -193,16 +173,17 @@ public class FlightItinerary implements IFlightItinerary, IItinerary
         leastCost(end, start);
     }
 
->>>>>>> Initial
     /** Main class **/
     public static void main(String[] args) throws FileNotFoundException, FlightItineraryException
     {
         FlightItinerary flight = new FlightItinerary();
-        flight.partA();
-<<<<<<< HEAD
-=======
-        flight.partB();
->>>>>>> Initial
+        System.out.println("Please select which part you would like to test:");
+        String part = scan.nextLine();
+        if (part.contains("A"))
+            flight.partA();
+        else if (part.contains("B"))
+            flight.partB();
+        else ;
     }
 
 
