@@ -2,6 +2,7 @@ import java.util.List;
 
 public interface IItinerary {
 
+
 	/** Returns the list of airports codes composing the itinerary */
 	List<String> getStops();
 	

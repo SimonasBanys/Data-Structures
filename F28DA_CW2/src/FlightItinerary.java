@@ -9,48 +9,10 @@ import java.util.List;
 import java.util.Scanner;
 
 
-public class FlightItinerary implements IFlightItinerary, IItinerary
+public class FlightItinerary implements IFlightItinerary
 {
     private SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> g = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
     private static Scanner scan = new Scanner(System.in);
-
-
-    /** Implementation of interfaces **/
-    @Override
-    public List<String> getStops() {
-        return null;
-    }
-
-    @Override
-    public List<String> getFlights() {
-        return null;
-    }
-
-    @Override
-    public int totalHop() {
-        return 0;
-    }
-
-    @Override
-    public int totalCost() {
-        return 0;
-    }
-
-    @Override
-    public int airTime() {
-        return 0;
-    }
-
-    @Override
-    public int connectingTime() {
-        return 0;
-    }
-
-    @Override
-    public int totalTime() {
-        return 0;
-    }
-
 
 
     @Override
@@ -70,11 +32,14 @@ public class FlightItinerary implements IFlightItinerary, IItinerary
     @Override
     public IItinerary leastCost(String to, String from) throws FlightItineraryException {
         DijkstraShortestPath d = new DijkstraShortestPath(g);
-        GraphPath path = d.getPath(from, to);
+        IItinerary i = new Itinerary(d.getPath(from, to), FlightsReader.AIRLINECODS);
         System.out.println("Shortest (i.e. cheapest) path:");
-        System.out.println(path);
-        System.out.println("Cost of the shortest (i.e. cheapest) path = " + path.getWeight());
-        return null;
+        for (int leg = 1; leg < i.getStops().size(); leg++)
+        {
+            System.out.println(leg + ". " + i.getStops().get(leg-1) + " --> " + i.getStops().get(leg));
+        }
+        System.out.println("Cost of the shortest (i.e. cheapest) path = " + i.totalCost());
+        return i;
     }
 
     @Override
@@ -107,13 +72,6 @@ public class FlightItinerary implements IFlightItinerary, IItinerary
         return null;
     }
 
-    public String toString(IItinerary i)
-    {
-        String result = "";
-
-        return result;
-    }
-
 
     /** Part A **/
     private void partA() throws FileNotFoundException, FlightItineraryException
@@ -141,35 +99,36 @@ public class FlightItinerary implements IFlightItinerary, IItinerary
         graphA.setEdgeWeight(graphA.addEdge("Kuala Lumpur", "Sydney"), 150);
         graphA.setEdgeWeight(graphA.addEdge("Sydney", "Kuala Lumpur"), 150);
 
-
+        //Input from user for begining and end of the journey
         String start, end;
         System.out.println("Please enter the start airport:");
         start = scan.nextLine();
         System.out.println("Please enter the destination airport:");
         end = scan.nextLine();
-        DijkstraShortestPath path = new DijkstraShortestPath(graphA);
+
+        // using the Dijkstra's algorithm to calculate shortest/cheapest path
+        DijkstraShortestPath p = new DijkstraShortestPath(graphA);
+        GraphPath path = p.getPath(start, end);
+
+        //output for the results
         System.out.println("Shortest (i.e. cheapest) path:");
-        System.out.println(path.getPath(start, end));
-        System.out.println("Cost of the shortest (i.e. cheapest) path = " + path.getPathWeight(start, end));
+        for (int leg = 1; leg < path.getVertexList().size(); leg++)
+        {
+            System.out.println(leg + ". " + path.getVertexList().get(leg-1) + " --> " + path.getVertexList().get(leg));
+        }
+        System.out.println("Cost of the shortest (i.e. cheapest) path = " + path.getWeight());
     }
 
 
     private void partB() throws FileNotFoundException, FlightItineraryException
     {
         FlightsReader reader = new FlightsReader(FlightsReader.AIRLINECODS);
-        this.populate(reader.getAirlines(), reader.getAirports(), reader.getRoutes());
+        populate(reader.getAirlines(), reader.getAirports(), reader.getRoutes());
         String start, end;
         System.out.println("Please enter the start airport:");
         start = scan.nextLine();
         System.out.println("Please enter the destination airport:");
         end = scan.nextLine();
-        for (String[] set : reader.getAirports())
-        {
-            if (set[1].equals(start))
-                start = set[0];
-            if (set[1].equals(end))
-                end = set[0];
-        }
         leastCost(end, start);
     }
 
