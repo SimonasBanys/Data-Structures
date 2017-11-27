@@ -19,6 +19,7 @@ public class FlightItinerary implements IFlightItinerary
 
     @Override
     public boolean populate(HashSet<String[]> airlines, HashSet<String[]> airports, HashSet<String[]> routes) {
+        /** populates the graph from the reader based on the Airline Codes provided to the Flight Reader **/
         DefaultWeightedEdge e;
         for (String[] set : airports)
             g.addVertex(set[0]);
@@ -38,21 +39,27 @@ public class FlightItinerary implements IFlightItinerary
         GraphPath p = d.getPath(from, to);
         List<String> route = new ArrayList<>();
         List<String[]> times = new ArrayList<>();
+        DefaultWeightedEdge e;
 
-        int timedep, timearr;
+        /** creates variables for route flight codes and departure and arrival times for Itinerary **/
         for (String[] set : routes){
-            for (int leg = 1; leg < p.getVertexList().size(); leg++)
-                if (set[1].equals(p.getVertexList().get(leg-1)) && set[3].equals(p.getVertexList().get(leg))) {
+            for (int leg = 1; leg < p.getVertexList().size(); leg++){
+                e = g.getEdge(p.getVertexList().get(leg-1).toString(), p.getVertexList().get(leg).toString());
+                if (set[1].equals(p.getVertexList().get(leg-1)) && set[3].equals(p.getVertexList().get(leg)) && (Integer.parseInt(set[5]) == g.getEdgeWeight(e))) {
                     route.add(set[0]);
                     String[] flight = {set[2], set[4]};
                     times.add(flight);
                 }
+            }
         }
 
+        /** creates a variable of IItinerary type and sets it **/
         IItinerary i = new Itinerary(p, route, times);
         System.out.println("Shortest (i.e. cheapest) path:");
+
+        /** Returns the results for Itinerary **/
         for (int leg = 1; leg < i.getStops().size(); leg++)
-            System.out.println(leg + ". On Fligth " + i.getFlights().get(leg - 1) + " From " + i.getStops().get(leg - 1) + " at " + times.get(leg-1)[0] +" ---> to " + i.getStops().get(leg) + " at " + times.get(leg-1)[1]);
+            System.out.println(leg + ". On Flight " + i.getFlights().get(leg - 1) + " From " + i.getStops().get(leg - 1) + " at " + times.get(leg-1)[0] +" ---> to " + i.getStops().get(leg) + " at " + times.get(leg-1)[1]);
         System.out.println("Cost of the shortest (i.e. cheapest) path = " + i.totalCost());
         System.out.println("Total time spent on a plane = " + i.airTime());
         System.out.println("Total time spent on connections = " + i.connectingTime());
@@ -94,18 +101,17 @@ public class FlightItinerary implements IFlightItinerary
     /** Part A **/
     private void partA() throws FileNotFoundException, FlightItineraryException
     {
-
-        // adding the graph
+        /** adding the graph **/
         SimpleDirectedWeightedGraph<String, DefaultWeightedEdge> graphA = new SimpleDirectedWeightedGraph<>(DefaultWeightedEdge.class);
 
-        // adding vertices to the graph
+        /** adding vertices to the graph **/
         graphA.addVertex("Edinburgh");
         graphA.addVertex("Heathrow");
         graphA.addVertex("Dubai");
         graphA.addVertex("Sydney");
         graphA.addVertex("Kuala Lumpur");
 
-        // adding edges to the vertices. Since edges are one directional they need to be added twice with opposite source and target vertices
+        /** setting the edges for the graph **/
         graphA.setEdgeWeight(graphA.addEdge("Edinburgh", "Heathrow"), 80);
         graphA.setEdgeWeight(graphA.addEdge("Heathrow", "Edinburgh"), 80);
         graphA.setEdgeWeight(graphA.addEdge("Heathrow", "Dubai"), 130);
@@ -119,32 +125,36 @@ public class FlightItinerary implements IFlightItinerary
         graphA.setEdgeWeight(graphA.addEdge("Kuala Lumpur", "Sydney"), 150);
         graphA.setEdgeWeight(graphA.addEdge("Sydney", "Kuala Lumpur"), 150);
 
-        //Input from user for begining and end of the journey
+        /** input from the user for beginning and end of the journey **/
         String start, end;
-        System.out.println("Please enter the start airport:");
+        System.out.println("Cities existing in the map: " + graphA.vertexSet() + " Please enter the start airport:");
         start = scan.nextLine();
         System.out.println("Please enter the destination airport:");
         end = scan.nextLine();
 
-        // using the Dijkstra's algorithm to calculate shortest/cheapest path
+        /** Using the Dijkstra's algorythm to calculate shortest/cheapest path **/
         DijkstraShortestPath p = new DijkstraShortestPath(graphA);
         GraphPath path = p.getPath(start, end);
 
-        //output for the results
+        /** Output for results **/
         System.out.println("Shortest (i.e. cheapest) path:");
         for (int leg = 1; leg < path.getVertexList().size(); leg++)
         {
             System.out.println(leg + ". " + path.getVertexList().get(leg-1) + " --> " + path.getVertexList().get(leg));
         }
-        System.out.println("Cost of the shortest (i.e. cheapest) path = " + path.getWeight());
+        System.out.println("Cost of the shortest (i.e. cheapest) path = " + (int) path.getWeight());
     }
 
+    public void setRoutes(HashSet<String[]> routes)
+    {
+        this.routes = routes;
+    }
 
     private void partB() throws FileNotFoundException, FlightItineraryException
     {
         FlightsReader reader = new FlightsReader(FlightsReader.AIRLINECODS);
         populate(reader.getAirlines(), reader.getAirports(), reader.getRoutes());
-        this.routes = reader.getRoutes();
+        setRoutes(reader.getRoutes());
         String start, end;
         System.out.println("Please enter the start airport:");
         start = scan.nextLine();
@@ -163,8 +173,5 @@ public class FlightItinerary implements IFlightItinerary
             flight.partA();
         else if (part.contains("B"))
             flight.partB();
-        //else ;
     }
-
-
 }

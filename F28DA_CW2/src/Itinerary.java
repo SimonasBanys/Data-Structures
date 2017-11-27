@@ -53,14 +53,14 @@ public class Itinerary implements IItinerary {
      */
     @Override
     public int airTime() {
-        int total;
+        int total = 0;
         LocalTime c1, c2, totalT, totalFlight;
         totalFlight = LocalTime.of(0,0);
         for (int i = 0; i < times.size(); i++) {
-                c1 = LocalTime.of(Integer.parseInt(times.get(i)[0])/100, Integer.parseInt(times.get(i)[0])%100);
-                c2 = LocalTime.of(Integer.parseInt(times.get(i)[1])/100, Integer.parseInt(times.get(i)[1])%100);
-                totalT = LocalTime.of(c2.plusHours(-c1.getHour()).getHour(), c2.plusMinutes(-c1.getMinute()).getMinute());
-                totalFlight = LocalTime.of((totalFlight.plusHours(totalT.getHour()).getHour()), (totalFlight.plusMinutes(totalT.getMinute()).getMinute()));
+            c1 = LocalTime.of(Integer.parseInt(times.get(i)[0])/100, Integer.parseInt(times.get(i)[0])%100);
+            c2 = LocalTime.of(Integer.parseInt(times.get(i)[1])/100, Integer.parseInt(times.get(i)[1])%100);
+            totalT = LocalTime.of(c2.plusHours(-c1.getHour()).getHour(), c2.plusMinutes(-c1.getMinute()).getMinute());
+            totalFlight = LocalTime.of((totalFlight.plusHours(totalT.getHour()).getHour()), (totalFlight.plusMinutes(totalT.getMinute()).getMinute()));
         }
         total = totalFlight.getHour()*100 + totalFlight.getMinute();
         return total;
@@ -75,11 +75,13 @@ public class Itinerary implements IItinerary {
         LocalTime cbeg, cend, totalT;
         cend = LocalTime.of(Integer.parseInt(times.get(0)[1])/100, Integer.parseInt(times.get(0)[1])%100);
         for (int i = 1; i < times.size(); i++) {
-                cbeg = LocalTime.of(Integer.parseInt(times.get(i)[0])/100, Integer.parseInt(times.get(i)[0])%100);
-                totalT = LocalTime.of(cbeg.plusHours(-cend.getHour()).getHour(), cbeg.plusMinutes(-cend.getMinute()).getMinute());
-                cend = LocalTime.of(Integer.parseInt(times.get(i)[1])/100, Integer.parseInt(times.get(i)[1])%100);
-                total += totalT.getHour()*100 + totalT.getMinute();
-            }
+            cbeg = LocalTime.of(Integer.parseInt(times.get(i)[0])/100, Integer.parseInt(times.get(i)[0])%100);
+            totalT = LocalTime.of(cbeg.plusHours(-cend.getHour()).getHour(), cbeg.plusMinutes(-cend.getMinute()).getMinute());
+            total += totalT.getHour()*100 + totalT.getMinute();
+            if (total%100 >= 60)
+                total += 40;
+            cend = LocalTime.of(Integer.parseInt(times.get(i)[1])/100, Integer.parseInt(times.get(i)[1])%100);
+        }
         return total;
     }
 
